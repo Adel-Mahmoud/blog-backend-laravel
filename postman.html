@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Postman Clone</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      textarea {
+        resize: vertical;
+        height: 100px;
+      }
+
+      button {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      .response {
+        margin-top: 20px;
+      }
+
+      pre {
+        background: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Postman Clone</h1>
+      <form>
+          <div class="form-group">
+            <label for="method">HTTP Method:</label>
+            <select id="method">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
+    
+          <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" id="url" placeholder="Enter the request URL" />
+          </div>
+    
+          <div class="form-group">
+            <label for="headers">Headers (JSON):</label>
+            <textarea
+              id="headers"
+              placeholder='{"Content-Type": "application/json"}'
+            ></textarea>
+          </div>
+    
+          <div class="form-group">
+            <label for="body">Request Body (JSON):</label>
+            <textarea id="body" placeholder='{"key": "value"}'></textarea>
+          </div>
+          <button id="send" type="submit">Send Request</button>
+      </form>
+
+      <div class="response">
+        <h2>Response:</h2>
+        <pre id="response-output"></pre>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- <script src="app.js"></script> -->
+    <script>
+      document.getElementById("send").addEventListener("click", async (event) => {
+        event.preventDefault();
+        const method = document.getElementById("method").value;
+        const url = document.getElementById("url").value;
+        const headersInput = document.getElementById("headers").value;
+        const bodyInput = document.getElementById("body").value;
+
+        let headers = {};
+        let body = {};
+
+        // Parse headers
+        try {
+          headers = headersInput ? JSON.parse(headersInput) : {};
+        } catch (error) {
+          alert("Invalid JSON in Headers");
+          return;
+        }
+
+        // Parse body
+        try {
+          body = bodyInput ? JSON.parse(bodyInput) : {};
+        } catch (error) {
+          alert("Invalid JSON in Body");
+          return;
+        }
+
+        try {
+          const response = await axios({
+            method,
+            url,
+            headers,
+            data: method !== "GET" ? body : null,
+          });
+
+          document.getElementById("response-output").textContent =
+            JSON.stringify(response.data, null, 2);
+        } catch (error) {
+          document.getElementById("response-output").textContent =
+            JSON.stringify(
+              error.response ? error.response.data : error.message,
+              null,
+              2
+            );
+        }
+      });
+    </script>
+  </body>
+</html>
